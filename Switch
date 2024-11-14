@@ -1,0 +1,28 @@
+#include <Arduino.h>
+
+#define SWITCH_PIN D1    // Pin waar de D1-signaalpin van de schakelaar op is aangesloten
+#define BUZZER_PIN D2    // Pin waar de zoemer op is aangesloten
+
+// Functie om het "laser"-geluid te genereren
+void playLaserSound() {
+    int frequencies[] = {1200, 1000, 800, 600, 400};  // Frequenties voor het laser-geluid
+    int durations[] = {50, 50, 50, 50, 50};           // Duur van elke toon
+
+    for (int i = 0; i < 5; i++) {
+        tone(BUZZER_PIN, frequencies[i], durations[i]);
+        delay(50);  // Wacht een moment tussen de tonen voor het effect
+    }
+    noTone(BUZZER_PIN);  // Zet de zoemer uit na het afspelen
+}
+
+void setup() {
+    pinMode(SWITCH_PIN, INPUT_PULLUP);  // Schakelaar pin als input met pull-up weerstanden
+    pinMode(BUZZER_PIN, OUTPUT);        // Zoemer pin als output
+}
+
+void loop() {
+    if (digitalRead(SWITCH_PIN) == LOW) {  // Controleer of de schakelaar is ingedrukt (LOW door NC)
+        playLaserSound();  // Speel het laser-geluid
+        delay(500);        // Voorkom dat het geluid constant blijft spelen als de knop is ingedrukt
+    }
+}
