@@ -1,41 +1,28 @@
 #include <Arduino.h>
 
-#define SWITCH_PIN D1  // D1-pin van de schakelaar voor het signaal
-#define BUZZER_PIN D2  // SIG-pin van de buzzer
-
-//================================================================================//
-// Noise                                                                          //
-// This code generates random tones for DURATION between +300 and -300 of the     //
-// FREQency specified.                                                            //
-//================================================================================//
-void noise(int freq, int duration) {
-    int low = freq - 300;
-    int high = freq + 300;
-    unsigned long time = millis();
-    while(millis() - time <= duration) {
-        tone(BUZZER_PIN, random(low, high));  // Willekeurige toon tussen low en high frequentie
-        delay(50);  // Korte pauze tussen tonen, kan aangepast worden
-    }
-    noTone(BUZZER_PIN);  // Zet de buzzer uit nadat het geluid is afgespeeld
-}
-//================================================================================//
+#define SWITCH_PIN D1      // D1-pin van de schakelaar voor het signaal
+#define RECORDER_PLAY_PIN D2  // PLAY-pin van de Recorder (waar de pin is verbonden)
+#define RECORDER_REC_PIN D3   // REC-pin van de Recorder (wordt niet gebruikt, opnameknop werkt niet)
 
 void setup() {
-    Serial.begin(9600);               // Start de seriële communicatie
-    pinMode(SWITCH_PIN, INPUT_PULLUP);  // Stel de schakelaar-pin in als input met pull-up weerstanden
-    pinMode(BUZZER_PIN, OUTPUT);      // Stel de buzzer-pin in als output
+    Serial.begin(9600);                 // Start de seriële communicatie
+    pinMode(SWITCH_PIN, INPUT_PULLUP);   // Stel de schakelaar-pin in als input met pull-up weerstanden
+    pinMode(RECORDER_PLAY_PIN, OUTPUT); // Stel de PLAY-pin van de Recorder in als output
+    pinMode(RECORDER_REC_PIN, INPUT);   // Stel de REC-pin in als input (wordt niet gebruikt)
 }
 
 void loop() {
     if (digitalRead(SWITCH_PIN) == HIGH) {   // Controleer of de schakelaar aan is (HIGH door pull-up)
         Serial.println("Schakelaar is AAN");  // Print naar seriële monitor voor feedback
         
-        // Speel een willekeurige noise met een basisfrequentie van 500 Hz en duur van 500 ms
-        noise(500, 500);  // Basisfrequentie van 500 Hz voor 500 ms
+        // Speel audio af door de PLAY pin aan te zetten
+        digitalWrite(RECORDER_PLAY_PIN, HIGH);  // Zet de PLAY-pin aan om het geluid af te spelen
+        delay(800);  // Verleng de afspeeltijd naar 2000 ms (2 seconden)
+        digitalWrite(RECORDER_PLAY_PIN, LOW);   // Zet de PLAY-pin uit om het geluid te stoppen
 
     } else {
         Serial.println("Schakelaar is UIT");   // Print status als de schakelaar niet ingedrukt is
-        noTone(BUZZER_PIN);                    // Zet de buzzer uit zodra de schakelaar wordt losgelaten
+        digitalWrite(RECORDER_PLAY_PIN, LOW);  // Zorg ervoor dat de PLAY-pin uit staat (geen geluid)
     }
     delay(100);  // Korte pauze tussen de uitlezingen
 }
