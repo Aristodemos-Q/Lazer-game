@@ -1,28 +1,41 @@
 #include <Arduino.h>
 
-#define SWITCH_PIN D1    // Pin waar de D1-signaalpin van de schakelaar op is aangesloten
-#define BUZZER_PIN D2    // Pin waar de zoemer op is aangesloten
+#define SWITCH_PIN D1  // D1-pin van de schakelaar voor het signaal
+#define BUZZER_PIN D2  // SIG-pin van de buzzer
 
-// Functie om het "laser"-geluid te genereren
-void playLaserSound() {
-    int frequencies[] = {1200, 1000, 800, 600, 400};  // Frequenties voor het laser-geluid
-    int durations[] = {50, 50, 50, 50, 50};           // Duur van elke toon
-
-    for (int i = 0; i < 5; i++) {
-        tone(BUZZER_PIN, frequencies[i], durations[i]);
-        delay(50);  // Wacht een moment tussen de tonen voor het effect
+//================================================================================//
+// Noise                                                                          //
+// This code generates random tones for DURATION between +300 and -300 of the     //
+// FREQency specified.                                                            //
+//================================================================================//
+void noise(int freq, int duration) {
+    int low = freq - 300;
+    int high = freq + 300;
+    unsigned long time = millis();
+    while(millis() - time <= duration) {
+        tone(BUZZER_PIN, random(low, high));  // Willekeurige toon tussen low en high frequentie
+        delay(50);  // Korte pauze tussen tonen, kan aangepast worden
     }
-    noTone(BUZZER_PIN);  // Zet de zoemer uit na het afspelen
+    noTone(BUZZER_PIN);  // Zet de buzzer uit nadat het geluid is afgespeeld
 }
+//================================================================================//
 
 void setup() {
-    pinMode(SWITCH_PIN, INPUT_PULLUP);  // Schakelaar pin als input met pull-up weerstanden
-    pinMode(BUZZER_PIN, OUTPUT);        // Zoemer pin als output
+    Serial.begin(9600);               // Start de seriële communicatie
+    pinMode(SWITCH_PIN, INPUT_PULLUP);  // Stel de schakelaar-pin in als input met pull-up weerstanden
+    pinMode(BUZZER_PIN, OUTPUT);      // Stel de buzzer-pin in als output
 }
 
 void loop() {
-    if (digitalRead(SWITCH_PIN) == LOW) {  // Controleer of de schakelaar is ingedrukt (LOW door NC)
-        playLaserSound();  // Speel het laser-geluid
-        delay(500);        // Voorkom dat het geluid constant blijft spelen als de knop is ingedrukt
+    if (digitalRead(SWITCH_PIN) == HIGH) {   // Controleer of de schakelaar aan is (HIGH door pull-up)
+        Serial.println("Schakelaar is AAN");  // Print naar seriële monitor voor feedback
+        
+        // Speel een willekeurige noise met een basisfrequentie van 500 Hz en duur van 500 ms
+        noise(500, 500);  // Basisfrequentie van 500 Hz voor 500 ms
+
+    } else {
+        Serial.println("Schakelaar is UIT");   // Print status als de schakelaar niet ingedrukt is
+        noTone(BUZZER_PIN);                    // Zet de buzzer uit zodra de schakelaar wordt losgelaten
     }
+    delay(100);  // Korte pauze tussen de uitlezingen
 }
