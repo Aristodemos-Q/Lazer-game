@@ -1,0 +1,92 @@
+// Define the pins for the 4 LEDs
+const int ledPins[] = {3, 4, 5, 7};
+const int numLeds = 4;
+
+void setup() {
+  // Initialize all LED pins as outputs
+  for (int i = 0; i < numLeds; i++) {
+    pinMode(ledPins[i], OUTPUT);
+    digitalWrite(ledPins[i], LOW); // Start with all LEDs OFF
+  }
+}
+
+void loop() {
+  // Light Show Sequence
+  blinkAll(500);         // Blink all LEDs ON and OFF
+  chaseEffect(200);      // LEDs light up one by one (chase effect)
+  reverseChase(200);     // LEDs light up in reverse order
+  alternatingPattern(300); // Alternate LEDs ON/OFF
+  allOnOffWave(100);     // Wave-like effect (all ON, all OFF gradually)
+}
+
+// Blink all LEDs ON and OFF
+void blinkAll(int delayTime) {
+  for (int i = 0; i < 3; i++) { // Blink 3 times
+    for (int j = 0; j < numLeds; j++) {
+      digitalWrite(ledPins[j], HIGH); // Turn all LEDs ON
+    }
+    delay(delayTime);
+    for (int j = 0; j < numLeds; j++) {
+      digitalWrite(ledPins[j], LOW); // Turn all LEDs OFF
+    }
+    delay(delayTime);
+  }
+}
+
+// Chase Effect: Turn LEDs ON one by one
+void chaseEffect(int delayTime) {
+  for (int i = 0; i < numLeds; i++) {
+    digitalWrite(ledPins[i], HIGH); // Turn current LED ON
+    delay(delayTime);
+    digitalWrite(ledPins[i], LOW);  // Turn current LED OFF
+  }
+}
+
+// Reverse Chase: Turn LEDs ON one by one in reverse order
+void reverseChase(int delayTime) {
+  for (int i = numLeds - 1; i >= 0; i--) {
+    digitalWrite(ledPins[i], HIGH); // Turn current LED ON
+    delay(delayTime);
+    digitalWrite(ledPins[i], LOW);  // Turn current LED OFF
+  }
+}
+
+// Alternating Pattern: Alternate between even and odd LEDs
+void alternatingPattern(int delayTime) {
+  for (int i = 0; i < 4; i++) { // Repeat the pattern 4 times
+    // Turn even LEDs ON, odd LEDs OFF
+    for (int j = 0; j < numLeds; j++) {
+      if (j % 2 == 0) {
+        digitalWrite(ledPins[j], HIGH);
+      } else {
+        digitalWrite(ledPins[j], LOW);
+      }
+    }
+    delay(delayTime);
+
+    // Turn odd LEDs ON, even LEDs OFF
+    for (int j = 0; j < numLeds; j++) {
+      if (j % 2 != 0) {
+        digitalWrite(ledPins[j], HIGH);
+      } else {
+        digitalWrite(ledPins[j], LOW);
+      }
+    }
+    delay(delayTime);
+  }
+}
+
+// Wave Effect: Gradually turn all LEDs ON, then OFF
+void allOnOffWave(int delayTime) {
+  // Turn all LEDs ON one by one
+  for (int i = 0; i < numLeds; i++) {
+    digitalWrite(ledPins[i], HIGH);
+    delay(delayTime);
+  }
+
+  // Turn all LEDs OFF one by one
+  for (int i = 0; i < numLeds; i++) {
+    digitalWrite(ledPins[i], LOW);
+    delay(delayTime);
+  }
+}
