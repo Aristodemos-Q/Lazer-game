@@ -1,0 +1,26 @@
+// Pin-definities
+const int buttonPin = 2;    // Pin verbonden met de knop
+const int playPin = 3;      // Pin verbonden met PLAYL op de Recorder V3 module
+
+void setup() {
+  Serial.begin(9600);              // Start de Serial Monitor
+  pinMode(buttonPin, INPUT_PULLUP); // Knop instellen als input (met interne pull-up weerstanden)
+  pinMode(playPin, OUTPUT);        // PLAYL pin instellen als output (voor afspelen)
+  digitalWrite(playPin, HIGH);     // Zet PLAYL standaard op HIGH (opname uit)
+}
+
+void loop() {
+  // Lees de status van de knop
+  int buttonState = digitalRead(buttonPin);
+
+  if (buttonState == HIGH) { // Knop is ingedrukt
+    Serial.println("Knop: AAN");  // Print naar de Serial Monitor
+    digitalWrite(playPin, LOW);   // Start het afspelen van het geluid (verbind PLAYL met GND)
+    delay(100);                   // Vertraging voor het registreren van de trigger
+    digitalWrite(playPin, HIGH);  // Zet PLAYL terug op HIGH om het afspelen te stoppen
+  } else {  // Knop is niet ingedrukt
+    Serial.println("Knop: UIT");  // Print naar de Serial Monitor
+  }
+
+  delay(500); // Vertraging voor leesbaarheid in de Serial Monitor
+}
