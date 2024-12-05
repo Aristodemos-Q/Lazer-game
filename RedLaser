@@ -1,0 +1,61 @@
+#define IR_RECEIVER_PIN 3  // Pin connected to TSOP4838 OUT
+#define GREEN_LIGHT_PIN 7  // Pin connected to green light
+#define RED_LIGHT_PIN 6    // Pin connected to red light
+#define PLAY_PIN_1 4       // Pin connected to first sound module's PLAYL
+#define PLAY_PIN_2 2       // Pin connected to second sound module's PLAYL
+
+int activationCount = 0; // Counter for the number of activations
+
+void setup() {
+  // Setup for IR detection and LEDs
+  pinMode(IR_RECEIVER_PIN, INPUT);  // Set pin as input for the IR receiver
+  pinMode(GREEN_LIGHT_PIN, OUTPUT); // Set green light pin as output
+  pinMode(RED_LIGHT_PIN, OUTPUT);   // Set red light pin as output
+
+  // Setup for sound
+  pinMode(PLAY_PIN_1, OUTPUT);      // Set pin for first sound module
+  pinMode(PLAY_PIN_2, OUTPUT);      // Set pin for second sound module
+  digitalWrite(PLAY_PIN_1, HIGH);   // Ensure the first sound module starts in a HIGH state
+  digitalWrite(PLAY_PIN_2, HIGH);   // Ensure the second sound module starts in a HIGH state
+
+  Serial.begin(9600);              // Start serial communication
+}
+
+void loop() {
+  int irSignal = digitalRead(IR_RECEIVER_PIN);  // Read the receiver output
+
+  if (irSignal == LOW) {  // Signal detected
+    // Turn on green light, turn off red light
+    digitalWrite(GREEN_LIGHT_PIN, HIGH);
+    digitalWrite(RED_LIGHT_PIN, LOW);
+    Serial.println("IR Signal Detected!");
+
+    // Play sound based on the activation count
+    activationCount++; // Increment activation count
+
+    if (activationCount <= 2) {  // Play the first sound for the first 3 activations
+      Serial.println("Playing first sound...");
+      digitalWrite(PLAY_PIN_1, LOW);   // Trigger first sound module
+      delay(100);                      // Short trigger delay
+      digitalWrite(PLAY_PIN_1, HIGH);  // Reset first sound module trigger
+      Serial.println("First sound stopped.");
+    } else {  // On the 4th activation, play the second sound
+      Serial.println("Playing second sound...");
+      digitalWrite(PLAY_PIN_2, LOW);   // Trigger second sound module
+      delay(100);                      // Short trigger delay
+      digitalWrite(PLAY_PIN_2, HIGH);  // Reset second sound module trigger
+      Serial.println("Second sound stopped.");
+      
+      
+      // Reset the activation count to repeat the cycle
+      activationCount = 0;
+    }
+  } else {  // No signal detected
+    // Turn on red light, turn off green light
+    digitalWrite(GREEN_LIGHT_PIN, LOW);
+    digitalWrite(RED_LIGHT_PIN, HIGH);
+    Serial.println("No Signal.");
+  }
+
+  delay(1000);  // Wait for 1 second
+}
